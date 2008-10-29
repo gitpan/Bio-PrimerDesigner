@@ -1,10 +1,11 @@
-# $Id: Result.pm,v 1.7 2003/10/27 23:40:02 sheldon Exp $
+# $Id: Result.pm,v 1.9 2005/08/23 13:51:14 smckay Exp $
 
 package Bio::PrimerDesigner::Result;
 
 =head1 NAME 
 
-Bio::PrimerDesigner::Result - a class for handling primer design results
+Bio::PrimerDesigner::Result - a class for handling primer 
+design or validation results
 
 =head1 SYNOPSIS
 
@@ -43,9 +44,9 @@ Bio::PrimerDesigner::Result - a class for handling primer design results
 
 =head1 DESCRIPTION
 
-Bio::PrimerDesigner::Result will autogenerate result access methods
-for the following keys: Native Boulder IO keys, Bio::PrimerDesigner
-alias keys, or e-PCR keys.
+ Bio::PrimerDesigner::Result will autogenerate result access methods
+ for for Native Boulder IO keys and Bio::PrimerDesigner keys for
+ primer3, e-PCR, isPcr and ipcress.
 
 =head1 METHODS
 
@@ -55,7 +56,7 @@ use strict;
 use base 'Class::Base';
 
 use vars '$VERSION';
-$VERSION = '0.01';
+$VERSION = sprintf "%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 use constant AUTO_FIELDS => [
     qw (
@@ -72,9 +73,9 @@ use constant AUTO_FIELDS => [
         tmright PRIMER_RIGHT startright tmleft pairendcomp PRIMER_RIGHT_SELF_END
         PRIMER_LEFT_GC_PERCENT rselfend PRIMER_LEFT_PENALTY PRIMER_RIGHT_PENALTY
         EXCLUDED_REGION PRIMER_LEFT_END_STABILITY PRIMER_NUM_RETURN 
-        PRIMER_RIGHT_SELF_ANY rselfany pairanycomp lqual startleft 
-        ***e-PCR_KEYS*** 
-        products size start stop sequence
+        PRIMER_RIGHT_SELF_ANY rselfany pairanycomp lqual startleft
+        ***other keys*** 
+        products size start stop end amplicon strand
     )
 ];
 
@@ -99,25 +100,24 @@ sub init {
 }
 
 # -------------------------------------------------------------------
-sub keys {
 
 =head2 keys
 
-This handles result method calls made via the
-Bio::PrimerDesigner::Result object.  Returns either a scalar or list
-dep. on context, e.g.:
+ This handles result method calls made via the
+ Bio::PrimerDesigner::Result object.  Returns either a scalar or list
+ depending on the on the arguments:
 
-  ------------------.------------------------
+  ------------------+------------------------
    Args passed      |  Returns
-  ------------------'------------------------
+  ------------------+------------------------
    none                scalar value for set 1
    numeric n           scalar value for set n
    numeric list 1..n   list with n elements
 
-The aliased output methods (below) return a string when called in a 
-scalar context and a list when called in a list context.  The native 
-primer3 (Boulder IO) keys can also be used.  There are also four 
-e-PCR-specific methods
+ The aliased output methods (below) return a string when called in a 
+ scalar context and a list when called in a list context.  The native 
+ primer3 (Boulder IO) keys can also be used.  There are also e-PCR,
+ isPcr and ipcress specific methods
 
 B<Primer3 keys>
 
@@ -163,13 +163,15 @@ B<Primer3 keys>
 
 =item * rendstab    -- right primer end stability
 
+=item * amplicon    -- amplified PCR product
+
 =back
 
-B<e-PCR keys>
+B<Other keys>
 
 =over 4
 
-=item * products    -- number of e-PCR products
+=item * products    -- number of PCR products
 
 =item * size        -- product size
 
@@ -177,12 +179,21 @@ B<e-PCR keys>
 
 =item * stop        -- product stop coordinate
 
+=item * end         -- synonymous with stop
+
+=item * strand      -- strand of product relative to the ref. sequence (isPCR, ipcress)
+
+=item * amplicon    -- returns the PCR product (isPCR only)
+
 =back
 
 =cut
 
+
+sub keys {
+
     my $self = shift;
-    return $self->error('method not yet implemented');
+    return $self->error('method not implemented');
 }
 
 1;
@@ -193,8 +204,7 @@ B<e-PCR keys>
 
 =head1 AUTHOR
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
-                   Ken Y Clark   E<lt>kclark@cpan.orgE<gt>.
+Copyright Sheldon McKay E<lt>mckays@cshl.eduE<gt> and Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 

@@ -1,4 +1,4 @@
-# $Id: Tables.pm,v 1.8 2003/10/27 23:40:02 sheldon Exp $
+# $Id: Tables.pm,v 1.9 2004/03/04 23:23:38 kclark Exp $
 
 package Bio::PrimerDesigner::Tables;
 
@@ -22,8 +22,7 @@ use strict;
 use base 'Class::Base';
 
 use vars '$VERSION';
-$VERSION = '0.01';
-
+$VERSION = sprintf "%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub info_table {
@@ -333,7 +332,7 @@ passed the image URL.
 
 =head1 AUTHOR
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>.
+Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>.
 
 =head1 LICENSE
 

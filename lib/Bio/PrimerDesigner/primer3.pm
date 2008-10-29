@@ -1,4 +1,4 @@
-# $Id: primer3.pm,v 1.8 2003/10/27 23:40:02 sheldon Exp $
+# $Id: primer3.pm,v 1.12 2005/08/23 13:51:14 smckay Exp $
 
 package Bio::PrimerDesigner::primer3;
 
@@ -19,13 +19,14 @@ raw output.
 =cut
 
 use strict;
+use File::Spec::Functions 'catfile';
+use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
 use base 'Class::Base';
 
 use vars '$VERSION';
-$VERSION = '0.01';
-
+$VERSION = sprintf "%d.%02d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub binary_name {
@@ -39,7 +40,6 @@ Defines the binary's name on the system.
 =cut
 
     my $self = shift;
-    
     return 'primer3';
 }
 
@@ -133,13 +133,20 @@ that can be used to call result methods.
         $result->{$count}->{$key} = $value if $key && $value;
 
         # save aliased output
-        $result->{$count}->{'qual'}       = $1 if /R_PAIR_PENALT\S+=(\S+)/;
-        $result->{$count}->{'left'}       = $1 if /R_LEFT\S+SEQUENC\S+=(\S+)/;
-        $result->{$count}->{'right'}      = $1 if /R_RIGHT\S+SEQUENC\S+=(\S+)/;
-        $result->{$count}->{'startleft'}  = $1 if /R_LEFT_?\d*=(\d+),\d+/;
-        $result->{$count}->{'startright'} = $1 if /R_RIGHT_?\d*=(\d+),\d+/;
-        $result->{$count}->{'lqual'}      = $1 if /R_LEFT\S*_PENALT\S+=(\S+)/;
-        $result->{$count}->{'rqual'}      = $1 if /R_RIGHT\S*_PENALT\S+=(\S+)/;
+        $result->{$count}->{'qual'}       = $1 
+	    if /R_PAIR_PENALT\S+=(\S+)/ || /R_PAIR_QUAL\S+=(\S+)/;
+        $result->{$count}->{'left'}       = $1 
+	    if /R_LEFT\S+SEQUENC\S+=(\S+)/;
+        $result->{$count}->{'right'}      = $1 
+	    if /R_RIGHT\S+SEQUENC\S+=(\S+)/;
+        $result->{$count}->{'startleft'}  = $1 
+	    if /R_LEFT_?\d*=(\d+),\d+/;
+        $result->{$count}->{'startright'} = $1 
+	    if /R_RIGHT_?\d*=(\d+),\d+/;
+        $result->{$count}->{'lqual'}      = $1 
+	    if /R_LEFT\S*_PENALT\S+=(\S+)/ || /R_LEFT\S*_QUAL\S+=(\S+)/;
+        $result->{$count}->{'rqual'}      = $1 
+	    if /R_RIGHT\S*_PENALT\S+=(\S+)/ || /R_RIGHT\S*_QUAL\S+=(\S+)/;
         $result->{$count}->{'leftgc'}     = int $1
             if /R_LEFT\S+GC_PERCEN\S+=(\S+)/;
         $result->{$count}->{'rightgc'}    = int $1
@@ -211,7 +218,8 @@ list of parameters for designing primers.
 
 =cut
 
-    my ( $self, $method, $loc, $args ) = @_; 
+    my ( $self, $method, $loc, $args ) = @_;
+    $method ||= 'remote';
 
     my $config = '';
     while ( my ( $key, $value ) = each %$args ) {
@@ -229,17 +237,14 @@ list of parameters for designing primers.
     }
     else { # "local"
         my $path        =  $loc;
-        $path           =~ s/\/$//;
         my $binary_name =  $self->binary_name or return;
-        my $binary_path =  join '/', $path, $binary_name;
+        my $binary_path =  catfile( $path, $binary_name );
         return $self->error("Can't execute local binary '$binary_path'")
             unless -x $binary_path;
 
-        my $tmp_file    = "/tmp/$$";
-        open CONFIG_FILE, ">$tmp_file" or 
-            return  $self->error("Can't write to '$tmp_file': $!");
-        print CONFIG_FILE $config, "=\n";
-        close CONFIG_FILE;
+        my ( $tmp_fh, $tmp_file ) = tempfile;
+        print $tmp_fh $config, "=\n";
+        close $tmp_fh;
         
         # 
         # send the instructions to primer3 and get results
@@ -256,7 +261,6 @@ list of parameters for designing primers.
     else {
         return '';
     }
-                                                                                
 }     
 
 # -------------------------------------------------------------------
@@ -272,7 +276,7 @@ Verify the validity of the design results.
 
     my $self    = shift;
     my $method  = shift;
-    my $results = join '', @_;
+    my $results = join '', grep {defined} @_;
 
     my $thing   = $method eq 'remote' ? 'URL' : 'binary'; 
     my $problem = "Possible problem with the primer3 $thing";
@@ -470,7 +474,7 @@ sub example {
 =head2 example
 
 Runs a sample remote primer design job.  Returns an
-Bio::PrimerDesigner::Result object
+Bio::PrimerDesigner::Result object.
 
 =cut
 
@@ -479,7 +483,7 @@ Bio::PrimerDesigner::Result object
     my $length     =  length $dna;
     my $result     =  $self->design(
         'remote',
-        'aceserver.biotech.ubc.ca/cgi-bin/primer_designer.cgi',
+        'dev.wormbase.org/db/seq/primer_designer.cgi',
         { 
             num        => 1,
             seq        => $dna,
@@ -500,7 +504,7 @@ sub _example_dna {
 
 =head2 _example_dna
 
-Returns an example DNA sequence
+Returns an example DNA sequence.
 
 =cut
 
@@ -525,8 +529,8 @@ Returns an example DNA sequence
 
 =head1 AUTHOR
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
-                   Ken Clark E<lt>kclark@cpan.orgE<gt>.
+Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 

@@ -100,7 +100,7 @@ METHODS
     Bio::PrimerDesigner::Results object.
 
 AUTHORS
-    Copyright (C) 2003 Sheldon McKay <smckay@bcgsc.bc.ca>, Ken Y. Clark
+    Copyright (C) 2003,2008 Sheldon McKay <mckay@cshl.edu>, Ken Y. Clark
     <kclark@cpan.org>.
 
 LICENSE

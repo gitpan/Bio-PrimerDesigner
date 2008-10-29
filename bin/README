@@ -1,20 +1,7 @@
 primer_designer.cgi -- installed on remote linux/unix webserver to provide 
-                       access to the primer3 and e-PCR binaries.  Requires 
-                       a server-side installation of Bio::PrimerDesigner
+                 access to thr primer3 and e-PCR binaries.  Requires 
+                 a server-side installation of Bio::PrimerDesigner
 
 primer_designer.pl  -- script to demonstrate Bio::PrimerDesigner functions
 
-render              -- a cgi script to be installed on your webserver for rendering
-	               of sequence features, PCR primers, etc graphically
-
-
-Website_example.tar.gz 
-                    -- example web application that designs primers
-                       for bacterial genomes.  Install with 
-                       'tar zxvf Website_example.tar.gz', see 
-                       ./website_example/README for more information
-
-primer3             -- primer3 v 0.9 binary compiled for linux
-
-e-PCR               -- e-PCR binary complied for linux
 

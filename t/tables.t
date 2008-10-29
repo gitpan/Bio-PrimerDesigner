@@ -1,11 +1,10 @@
 #!/usr/bin/perl
 
-# $Id: tables.t,v 1.4 2003/08/05 22:43:22 kclark Exp $
+# $Id: tables.t,v 1.5 2004/02/19 22:54:58 sheldon Exp $
 
 #
 # Tests specific to "Bio::PrimerDesigner::Tables."
 #
-
 use strict;
 
 use Test::More tests => 10;

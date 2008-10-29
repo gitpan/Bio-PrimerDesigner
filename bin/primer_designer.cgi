@@ -1,6 +1,4 @@
-#!/usr/local/bin/perl -w
-
-# $Id: primer_designer.cgi,v 1.4 2003/08/05 23:02:15 kclark Exp $
+#!/usr/bin/perl
 
 =pod
 
@@ -125,7 +123,7 @@ An e-PCR wrapper.
 
 =head1 AUTHORS
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
+Copyright (C) 2003-4 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
                    Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE

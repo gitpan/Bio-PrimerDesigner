@@ -1,4 +1,4 @@
-# $Id: epcr.pm,v 1.12 2003/10/27 23:40:02 sheldon Exp $
+# $Id: epcr.pm,v 1.16 2005/08/23 13:51:14 smckay Exp $
 
 package Bio::PrimerDesigner::epcr;
 
@@ -21,13 +21,14 @@ and unexpected PCR products.
 =cut
 
 use strict;
+use File::Spec::Functions 'catfile';
+use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
 use base 'Class::Base';
 
 use vars '$VERSION';
-$VERSION = '0.01';
-
+$VERSION = sprintf "%d.%02d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub run {
@@ -53,39 +54,40 @@ will be tested (ie: forward + reverse, forward + forward, reverse + reverse)
     $args->{'permute'} = 0;
     
     if ( $permute ) {
-        for my $combo ( 1..3 ) {
-            my %seen               = (); 
-        local $args->{'right'} = $left  if $combo == 2; 
-        local $args->{'left'}  = $right if $combo == 3;
-        $params[2]             = $args;  
-        my @pre_result = $self->request(@params);
-            
-        #
-        # e-pcr quirk, same-primer comparisons give two identical
-        # results, we will ignore duplicates
-        #
-        for my $line (@pre_result) {
-            push @result, $line unless $seen{$line};
+        for my $combo ( 1 .. 3 ) {
+            my %seen = ();
+            local $args->{'right'} = $left  if $combo == 2;
+            local $args->{'left'}  = $right if $combo == 3;
+            $params[2] = $args;
+            my @pre_result = $self->request(@params);
+
+            #
+            # e-pcr quirk, same-primer comparisons give two identical
+            # results, we will ignore duplicates
+            #
+            for my $line (@pre_result) {
+                push @result, $line unless $seen{$line};
                 $seen{$line} = 1 if !$seen{$line};
             }
         }
-    } else {
-        @result  = $self->request(@params);
+    }
+    else {
+        @result = $self->request( @params );
     }
     
-    my $out     = Bio::PrimerDesigner::Result->new;
+    my $out = Bio::PrimerDesigner::Result->new;
 
     $out->{1}->{'products'} = @result;
-    $out->{1}->{'raw_output'} = join '', @result;
+    $out->{1}->{'raw_output'} = join '', grep {defined} @result;
     my $count = 0;
 
     for (@result) {
         $count++;
-        next unless /\.\./;
+        next unless $_ && /\.\./;
         my ($start, $stop) = /(\d+)\.\.(\d+)/;
         my $size = abs($stop - $start);
         $out->{$count}->{'start'} = $start - 1;
-        $out->{$count}->{'stop'}  = $stop - 1;
+        $out->{$count}->{'stop'}  = $out->{$count}->{'end'} = $stop - 1;
         $out->{$count}->{'size'}  = $size;
     }
  
@@ -97,33 +99,31 @@ sub request {
 
 =head2 request
 
-Assembles the e-PCR config file and command-line
-arguments and send the e-PCR request to the local
-e-PCR binary or remote server.
+Assembles the e-PCR config file and command-line arguments and send
+the e-PCR request to the local e-PCR binary or remote server.
 
 =cut
 
     my $self = shift;
     my ($method, $loc, $args) = @_;
     my @data = ();
+    $method ||= 'remote';
     
     if ( $method eq 'remote' ) {
-        my $cgi = Bio::PrimerDesigner::Remote->new;
-        $cgi->{'program'} = 'e-PCR';
-        my @params = ();
-        
-        if ( !defined $args->{'seq'} ) {
+        if ( ! defined $args->{'seq'} ) {
             $self->error(
                 "A sequence must be supplied (not a file name) for remote epcr"
             );
             return '';
         }
-        
+
+        my $cgi = Bio::PrimerDesigner::Remote->new;
+        $cgi->{'program'}  = 'e-PCR';
         $args->{'program'} = 'e-PCR';
         
         @data = $cgi->CGI_request( $loc, $args );
     }
-    else { # run ePCR locally
+    elsif ( $method eq 'local') { # run ePCR locally
         #
         # required parameters
         #
@@ -131,7 +131,7 @@ e-PCR binary or remote server.
         my $right      = uc $args->{'right'} || $self->error("no right primer");
         my $seq        = $args->{'seq'}      || '';
         my $file       = $args->{'seqfile'}  || '';
-        $self->error("no sequence supplied") unless $seq || $file;
+        $self->error("No sequence supplied") unless $seq || $file;
 
         #
         # optional parameters
@@ -144,21 +144,19 @@ e-PCR binary or remote server.
         #
         # e-PCR config file
         #
-        my $temp_loc = "/tmp/tmpsts$$";
-        open TEMP, ">$temp_loc" or $self->error($!);
-        print TEMP "ePCR_test\t$left\t$right\t$prod_size\t\n";
-        close TEMP;
+        my ( $temp_loc_fh, $temp_loc ) = tempfile;
+        print $temp_loc_fh "ePCR_test\t$left\t$right\t$prod_size\t\n";
+        close $temp_loc_fh;
       
         #
         # e-PCR sequence file (fasta format)
         #
-        my ($seq_loc, $seq_file, $seq_temp);
+        my ($seq_loc_fh, $seq_loc, $seq_file, $seq_temp);
         if ($seq) {
-            $seq_loc = "/tmp/target$$";
-            open SEQ, ">$seq_loc";
+            ( $seq_loc_fh, $seq_loc ) = tempfile;
             $seq_temp = $seq_loc;
-            print SEQ ">Test sequence\n$seq\n";
-            close SEQ;
+            print $seq_loc_fh ">Test sequence\n$seq\n";
+            close $seq_loc_fh;
         }
         else {
             $seq_loc = $file or $self->error('No sequence file');
@@ -169,7 +167,7 @@ e-PCR binary or remote server.
         #
         my $params = "$temp_loc $seq_loc ";
         $params   .= "M=$margin W=$word_size N=$num_mismatch";
-        $loc      .= "/" . $self->binary_name;
+        $loc       = catfile( $loc, $self->binary_name );
           
         # 
         # run e-PCR
@@ -177,7 +175,7 @@ e-PCR binary or remote server.
         open EPCR, "$loc $params |";
         @data = <EPCR>;
         close EPCR;
-      
+
         unlink $temp_loc;
         unlink $seq_temp if $seq_temp && -e $seq_temp;
     }
@@ -205,7 +203,7 @@ to produce a PCR product.
     $param{'left'}      = 'TTGCGCATTTACGATTACGA';
     $param{'right'}     = 'ATGCTGTAATCGGCTGTCCT';
     $param{'seq'}       = 'GCAGCGAGTTGCGCATTTACGATTACGACATACGACACGA' .
-                             'TTACAGACAGGACAGCCGATTACAGCATATCGACAGCAT';
+                          'TTACAGACAGGACAGCCGATTACAGCATATCGACAGCAT';
     $param{'prod_size'} = 70;
     $param{'margin'}    = 20;
     
@@ -241,6 +239,8 @@ sub list_aliases {
 =pod
 
 =head2 list_aliases
+
+There are no aliases to list for epcr.
 
 =cut
 
@@ -287,8 +287,8 @@ will be used for the remaining options if none are supplied.
 
 =head1 AUTHOR
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
-                   Ken Y. Clark E<lt>kclarkk@cpan.orgE<gt>.
+Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 

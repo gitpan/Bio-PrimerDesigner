@@ -1,4 +1,4 @@
-# $Id: Remote.pm,v 1.9 2003/10/27 23:40:02 sheldon Exp $
+# $Id: Remote.pm,v 1.10 2004/03/04 23:23:38 kclark Exp $
 
 package Bio::PrimerDesigner::Remote;
 
@@ -13,8 +13,8 @@ Bio::PrimerDesigner::Remote - A class for remote access to Bio::PrimerDesigner
 =head1 DESCRIPTION
 
 Interface to the server-side binaries.  Passes the primer design
-paramaters to a remote CGI, which uses a server-side
-installation of Bio::PrimerDesigner to process the request
+paramaters to a remote CGI, which uses a server-side installation of
+Bio::PrimerDesigner to process the request.
 
 =head1 METHODS
 
@@ -26,8 +26,7 @@ use base 'Class::Base';
 use strict;
 
 use vars '$VERSION';
-$VERSION = '0.01';
-
+$VERSION = sprintf "%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub CGI_request {
@@ -36,8 +35,8 @@ sub CGI_request {
 
 =head2 CGI_request                                                           
 
-Passes arguments to the URL of the remote Bio::PrimerDesigner CGI and returns
-the raw output for further processing by local design classes
+Passes arguments to the URL of the remote Bio::PrimerDesigner CGI and 
+returns the raw output for further processing by local design classes.
 
 =cut
 
@@ -47,13 +46,12 @@ the raw output for further processing by local design classes
     $url         = 'http://' . $url unless $url =~ m{https?://};
     my $args     = shift or return $self->error('No config file');
     my $program  = $args->{'program'};
-    
     my $ua       = LWP::UserAgent->new;
 
     #
     # Is the remote server able to process our request?
     #
-    unless ( $self->check($url, $ua, $program) ) {
+    unless ( $self->check( $url, $ua, $program ) ) {
         return $self->error("$url did not return expected result");
     }
 
@@ -84,7 +82,7 @@ sub check {
 =head2 check
 
 Tests the URL to make sure the host is live and the CGI returns the
-expected results
+expected results.
 
 =cut
 
@@ -114,8 +112,8 @@ expected results
 
 =head1 AUTHOR
 
-Copyright (C) 2003 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
-                   Ken Y. Clark E<lt>kclarkk@cpan.orgE<gt>.
+Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 
