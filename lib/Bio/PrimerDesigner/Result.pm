@@ -56,6 +56,9 @@ use strict;
 use warnings;
 use Readonly;
 
+Readonly our 
+    $VERSION => sprintf "%s", q$Revision: 24 $ =~ /(\d+)/;
+
 use base 'Class::Base';
 
 Readonly my @AUTO_FIELDS => qw(

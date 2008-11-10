@@ -1,6 +1,6 @@
 package Bio::PrimerDesigner;
 
-# $Id: PrimerDesigner.pm 15 2008-11-07 02:44:34Z kyclark $
+# $Id: PrimerDesigner.pm 25 2008-11-10 20:22:18Z kyclark $
 
 =head1 NAME 
 
@@ -98,7 +98,7 @@ Readonly my %DESIGNER  => (
     epcr               => 'Bio::PrimerDesigner::epcr', 
 );
 Readonly our 
-    $VERSION => '0.03'; # must break like this for Module::Build to find
+    $VERSION => '0.04'; # must break like this for Module::Build to find
 
 # -------------------------------------------------------------------
 sub init {

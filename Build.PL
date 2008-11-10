@@ -1,4 +1,4 @@
-# $Id: Build.PL 19 2008-11-10 16:50:50Z sheldon.mckay $
+# $Id: Build.PL 26 2008-11-10 20:36:37Z kyclark $
 
 use strict;
 use warnings;
@@ -40,7 +40,6 @@ my $config    = sprintf( $tmpl, "  local_url => '$url'," );
 close $in_fh;
 
 my $config_pm = catfile( cwd(), 'lib', 'Bio', 'PrimerDesigner', 'Config.pm' );
-print "Writing '$config_pm'\n";
 open my $out_fh, '>', $config_pm or die "Can't write '$config': $!\n";
 print $out_fh $config;
 close $out_fh;
@@ -52,20 +51,22 @@ my $builder = Module::Build->new(
     create_readme        => 1,
     dist_name            => 'Bio-PrimerDesigner',
     dist_abstract        => 'Design PCR primers using primer3 and epcr',
-    dist_author          => 'Sheldon McKay <mckays@cshl.edu>; Ken Youns-Clark <kclark@cshl.edu>',
+    dist_author          => 'Sheldon McKay <mckays@cshl.edu>; Ken Youens-Clark <kclark@cshl.edu>',
     module_name          => 'Bio::PrimerDesigner',
-    dist_version         => 0.03,
+    dist_version         => 0.04,
     license              => 'gpl',
     script_files         => [ 'scripts/primer_designer' ],
     requires             => {
-        'Class::Base'    => 0,
-        'HTTP::Request'  => 0,
-        'HTTP::Response' => 0,
-        'LWP::UserAgent' => 0,
-        'Readonly'       => 0,
-        'Test::More'     => 0,
-        'Test::Pod::Coverage' => 1.08,
-        'Test::Pod'           => 1.22
+        'Class::Base'         => 0,
+        'HTTP::Request'       => 0,
+        'HTTP::Response'      => 0,
+        'LWP::UserAgent'      => 0,
+        'Readonly'            => 0,
+    },
+    test_requires        => {
+        'Test::More'          => 0,
+        'Test::Pod::Coverage' => 0,
+        'Test::Pod'           => 0,
     },
 );
 

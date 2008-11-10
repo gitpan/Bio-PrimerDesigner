@@ -19,6 +19,10 @@ design and e-PCR results for web applications.
 
 use strict;
 use warnings;
+use Readonly;
+
+Readonly our 
+    $VERSION => sprintf "%s", q$Revision: 24 $ =~ /(\d+)/;
 
 use base 'Class::Base';
 

@@ -24,6 +24,10 @@ use File::Spec::Functions 'catfile';
 use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
+use Readonly;
+
+Readonly our 
+    $VERSION => sprintf "%s", q$Revision: 24 $ =~ /(\d+)/;
 
 use base 'Class::Base';
 

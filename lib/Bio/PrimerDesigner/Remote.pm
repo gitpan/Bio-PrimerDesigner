@@ -24,6 +24,10 @@ use strict;
 use warnings;
 use HTTP::Request;
 use LWP::UserAgent;
+use Readonly;
+
+Readonly our 
+    $VERSION => sprintf "%s", q$Revision: 24 $ =~ /(\d+)/;
 
 use base 'Class::Base';
 
