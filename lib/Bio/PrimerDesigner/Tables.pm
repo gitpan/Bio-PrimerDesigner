@@ -1,6 +1,6 @@
-# $Id: Tables.pm,v 1.9 2004/03/04 23:23:38 kclark Exp $
-
 package Bio::PrimerDesigner::Tables;
+
+# $Id: Tables.pm 9 2008-11-06 22:48:20Z kyclark $
 
 =pod
 
@@ -18,11 +18,9 @@ design and e-PCR results for web applications.
 =cut
 
 use strict;
+use warnings;
 
 use base 'Class::Base';
-
-use vars '$VERSION';
-$VERSION = sprintf "%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub info_table {

@@ -1,22 +1,68 @@
-#!perl
+#!/usr/local/bin/perl
 
-# $Id: primer_designer.cgi.PLS,v 1.1 2004/03/04 23:28:37 kclark Exp $
+# $Id: primer_designer.cgi 6 2008-11-06 21:34:01Z kyclark $
 
-use Config;
-use File::Basename qw(basename dirname);
-use File::Spec::Functions;
+use strict;
+use warnings;
+use CGI ':standard';
+use CGI::Carp 'fatalsToBrowser';
+use Bio::PrimerDesigner;
+use Readonly;
 
-my $dir = dirname($0);
-$file   = shift || catfile( $dir, basename( $0, '.PL','.PLS' ) );
+Readonly my %BINARY => (
+    primer3 => \&primer3,
+    ePCR    => \&ePCR,
+);
 
-open OUT, ">$file" or die "Can't write to file '$file': $!";
+print header;
 
-my $startperl = $Config{'startperl'} ne '#!perl'
-  ? $Config{'startperl'}
-  : "#!$Config{'perlpath'}";
+#
+# Get remote config info and re-hashify it.
+#
+my $input  = param('config') or die "No config info provided";
+my @config = split '#', $input;
+my %config = ();
 
-print OUT "$startperl\n";
-print OUT <<'NOGROK';
+for (@config) {
+    my ($key, $value) = split '=', $_;
+    $config{$key} = $value;
+}
+
+#
+# Get binary name.
+#
+my $binary = $config{'program'} or die "No program defined";
+my $method = $BINARY{ $binary } or die "Invalid binary '$binary'";
+
+delete $config{'program'};
+
+$method->( %config );
+
+# -------------------------------------------------------------------
+sub primer3 {
+    my %config  = @_ or die "no primer3 input";
+    my $primer3 = Bio::PrimerDesigner->new or die Bio::PrimerDesigner->error;
+    my $result  = $primer3->design( %config )
+                  or die $primer3->error;
+    print $result->raw_output;
+}
+
+# -------------------------------------------------------------------
+sub ePCR {
+    my %config = @_;
+
+    my $local_epcr = Bio::PrimerDesigner->new( program => 'epcr')
+      or die Bio::PrimerDesigner->error;
+
+    my $result = $local_epcr->run( %config )
+      or die $local_epcr->error;
+
+    print $result->raw_output;
+}
+
+exit 0;
+
+# -------------------------------------------------------------------
 
 =pod
 
@@ -47,102 +93,10 @@ primer_designer.cgi -- server-side wrapper for the primer3 and e-PCR binaries
   #
   my $result = design( %options );
 
-=head1 SUBROUTINES
-
-=cut
-
-use CGI ':standard';
-use CGI::Carp 'fatalsToBrowser';
-use Bio::PrimerDesigner;
-use strict;
-
-print header;
-
-check(param('check'));
-
-#
-# Get remote config info and re-hashify it.
-#
-my $input  = param('config') or die "No config info provided";
-my @config = split '#', $input;
-my %config = ();
-
-for (@config) {
-    my ($key, $value) = split '=', $_;
-    $config{$key} = $value;
-}
-
-#
-# Get binary name.
-#
-my $binary = $config{'program'} or die "No program defined";
-delete $config{'program'};
-
-#
-# Pass the request and parameters to the local Bio::PrimerDesigner.
-#
-$binary eq 'primer3' ? primer3( %config ) : ePCR( %config );
-
-# -------------------------------------------------------------------
-sub check{
-
-=head2 check
-
-Verifies that this CGI is active and supports the requested binary.
-
-=cut
-
-    my $program = shift;
-    if ($program) {
-        print "$program OK\n" if $program =~ /e-PCR|primer3/;
-        exit;
-    }
-}
-
-# -------------------------------------------------------------------
-sub primer3 {
-
-=head2 primer3
-
-A primer3 wrapper.
-
-=cut
-
-    my %config  = @_ or die "no primer3 input";
-    my $primer3 = Bio::PrimerDesigner->new or die Bio::PrimerDesigner->error;
-    my $result  = $primer3->design( %config )
-                  or die $primer3->error;
-    print $result->raw_output;
-}
-
-# -------------------------------------------------------------------
-sub ePCR {
-
-=head2 ePCR
-
-An e-PCR wrapper.
-
-=cut
-
-    my %config = @_;
-
-    my $local_epcr = Bio::PrimerDesigner->new( program => 'epcr')
-      or die Bio::PrimerDesigner->error;
-
-    my $result = $local_epcr->run( %config )
-      or die $local_epcr->error;
-
-    print $result->raw_output;
-}
-
-# -------------------------------------------------------------------
-
-=pod
-
 =head1 AUTHORS
 
-Copyright (C) 2003-4 Sheldon McKay E<lt>smckay@bcgsc.bc.caE<gt>,
-                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
+Copyright (C) 2003-8 Sheldon McKay E<lt>smckay@cshl.eduE<gt>,
+Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 
@@ -165,5 +119,3 @@ USA.
 Bio::PrimerDesigner, Bio::PrimerDesigner::primer3, Bio::PrimerDesigner::e-PCR.
 
 =cut
-NOGROK
-close OUT or die "Can't write file '$file': $!\n";

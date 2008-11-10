@@ -1,6 +1,6 @@
-# $Id: Remote.pm,v 1.10 2004/03/04 23:23:38 kclark Exp $
-
 package Bio::PrimerDesigner::Remote;
+
+# $Id: Remote.pm 9 2008-11-06 22:48:20Z kyclark $
 
 =head1 NAME
 
@@ -20,13 +20,12 @@ Bio::PrimerDesigner to process the request.
 
 =cut
 
+use strict;
+use warnings;
 use HTTP::Request;
 use LWP::UserAgent;
-use base 'Class::Base';
-use strict;
 
-use vars '$VERSION';
-$VERSION = sprintf "%d.%02d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+use base 'Class::Base';
 
 # -------------------------------------------------------------------
 sub CGI_request {
@@ -113,7 +112,7 @@ expected results.
 =head1 AUTHOR
 
 Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
-                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
+Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 

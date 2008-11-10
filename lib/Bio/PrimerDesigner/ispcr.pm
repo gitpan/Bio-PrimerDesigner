@@ -1,6 +1,6 @@
-# $Id: ispcr.pm,v 1.1 2005/08/23 13:51:14 smckay Exp $
-
 package Bio::PrimerDesigner::ispcr;
+
+# $Id: ispcr.pm 9 2008-11-06 22:48:20Z kyclark $
 
 =head1 NAME 
 
@@ -21,16 +21,18 @@ and unexpected PCR products.
 =cut
 
 use strict;
+use warnings;
 use File::Spec::Functions 'catfile';
 use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
+
 use base 'Class::Base';
 
-use vars '$VERSION';
-$VERSION = sprintf "%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
-
 # -------------------------------------------------------------------
+sub run {
+
+=pod
 
 =head2 run
 
@@ -42,7 +44,6 @@ will be tested (ie: forward + reverse, forward + forward, reverse + reverse)
 
 =cut
 
-sub run {
     my $self    = shift;
     my @result  = (); 
     my @params  = @_ or return $self->error("No arguments for run method");
@@ -105,6 +106,9 @@ sub run {
 }
 
 # -------------------------------------------------------------------
+sub request {
+
+=pod
 
 =head2 request
 
@@ -113,7 +117,6 @@ the request to the local binary or remote server.
 
 =cut
 
-sub request {
     my $self = shift;
     my ($method, $loc, $args) = @_;
     my @data = ();
@@ -188,7 +191,9 @@ sub request {
 }
 
 # -------------------------------------------------------------------
+sub verify {
 
+=pod
 
 =head2 verify
 
@@ -201,8 +206,6 @@ to produce a PCR product.
 
 =cut
 
-
-sub verify {
     my $self            = shift;
     my ($method, $loc)  = @_ or $self->error('No verify parameters');
     my %param           = ();

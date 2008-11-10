@@ -1,6 +1,6 @@
-# $Id: epcr.pm,v 1.16 2005/08/23 13:51:14 smckay Exp $
-
 package Bio::PrimerDesigner::epcr;
+
+# $Id: epcr.pm 9 2008-11-06 22:48:20Z kyclark $
 
 =head1 NAME 
 
@@ -21,14 +21,13 @@ and unexpected PCR products.
 =cut
 
 use strict;
+use warnings;
 use File::Spec::Functions 'catfile';
 use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
-use base 'Class::Base';
 
-use vars '$VERSION';
-$VERSION = sprintf "%d.%02d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
+use base 'Class::Base';
 
 # -------------------------------------------------------------------
 sub run {
@@ -288,7 +287,7 @@ will be used for the remaining options if none are supplied.
 =head1 AUTHOR
 
 Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
-                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
+Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 

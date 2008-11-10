@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: remote.t,v 1.4 2003/08/05 22:43:22 kclark Exp $
+# $Id: remote.t 16 2008-11-07 02:44:52Z kyclark $
 
 #
 # Tests specific to "Bio::PrimerDesigner::Remote."

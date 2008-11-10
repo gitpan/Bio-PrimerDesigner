@@ -1,6 +1,6 @@
-# $Id: primer3.pm,v 1.12 2005/08/23 13:51:14 smckay Exp $
-
 package Bio::PrimerDesigner::primer3;
+
+# $Id: primer3.pm 9 2008-11-06 22:48:20Z kyclark $
 
 =head1 NAME 
 
@@ -19,14 +19,14 @@ raw output.
 =cut
 
 use strict;
+use warnings;
 use File::Spec::Functions 'catfile';
 use File::Temp 'tempfile';
 use Bio::PrimerDesigner::Remote;
 use Bio::PrimerDesigner::Result;
+
 use base 'Class::Base';
 
-use vars '$VERSION';
-$VERSION = sprintf "%d.%02d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
 
 # -------------------------------------------------------------------
 sub binary_name {
@@ -530,7 +530,7 @@ Returns an example DNA sequence.
 =head1 AUTHOR
 
 Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
-                   Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
+Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
 
