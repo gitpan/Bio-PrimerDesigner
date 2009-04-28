@@ -397,7 +397,7 @@ working properly.
 
 =head1 AUTHORS
 
-Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
 Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE

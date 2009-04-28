@@ -301,7 +301,7 @@ will be used for the remaining options if none are supplied.
 
 =head1 AUTHOR
 
-Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.edu<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.edu<gt>,
                      Ken Y. Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE

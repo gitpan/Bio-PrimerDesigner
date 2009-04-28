@@ -19,7 +19,7 @@ like( $rem->error, qr/no url specified/i, 'Error because no URL' );
 
 ok(
     $rem->CGI_request( 
-        'dev.wormbase.org/db/seq/primer_designer.cgi',
+        'mckay.cshl.edu/cgi-bin/primer_designer.cgi',
     	{ program => 'primer3' }
 	),
     'Call to remote server'

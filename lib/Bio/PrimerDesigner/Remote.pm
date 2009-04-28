@@ -96,13 +96,14 @@ expected results.
     my $request  = HTTP::Request->new( 'POST', $url );
     $request->content( $content );
     my $response = $ua->request( $request );
-    my $output   = $response->content;
 
     return $self->error("No reponse from host $url")
         unless $response;
 
+    my $output   = $response->content;
+
     return $self->error("Incorrect response from host $url")
-        unless $response->content =~ /$program OK/m;
+        unless $output =~ /$program OK/m;
 
     return 1;
 }
@@ -115,7 +116,7 @@ expected results.
 
 =head1 AUTHOR
 
-Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
 Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE

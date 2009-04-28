@@ -29,6 +29,9 @@ use Readonly;
 Readonly our 
     $VERSION => sprintf "%s", q$Revision: 24 $ =~ /(\d+)/;
 
+Readonly our
+    $REMOTE_URL => 'mckay.cshl.edu/cgi-bin/primer_designer.cgi';
+
 use base 'Class::Base';
 
 
@@ -487,7 +490,7 @@ Bio::PrimerDesigner::Result object.
     my $length     =  length $dna;
     my $result     =  $self->design(
         'remote',
-        'dev.wormbase.org/db/seq/primer_designer.cgi',
+        $REMOTE_URL,
         { 
             num        => 1,
             seq        => $dna,
@@ -533,7 +536,7 @@ Returns an example DNA sequence.
 
 =head1 AUTHOR
 
-Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
 Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE

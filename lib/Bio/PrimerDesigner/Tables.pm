@@ -334,7 +334,7 @@ passed the image URL.
 
 =head1 AUTHOR
 
-Copyright (C) 2003-2008 Sheldon McKay E<lt>mckays@cshl.eduE<gt>.
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>.
 
 =head1 LICENSE
 

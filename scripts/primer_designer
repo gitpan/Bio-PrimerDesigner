@@ -194,7 +194,7 @@ unix binaries or remotely via an HTTP/CGI request.
 
 =head1 AUTHOR
 
-Copyright (C) 2003-8 Sheldon McKay E<lt>smckay@cshl.eduE<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
 Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 SEE ALSO

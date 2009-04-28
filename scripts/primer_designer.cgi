@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # $Id: primer_designer.cgi 6 2008-11-06 21:34:01Z kyclark $
 
@@ -15,6 +15,8 @@ Readonly my %BINARY => (
 );
 
 print header;
+
+check(param('check'));
 
 #
 # Get remote config info and re-hashify it.
@@ -64,6 +66,28 @@ exit 0;
 
 # -------------------------------------------------------------------
 
+#
+# Pass the request and parameters to the local Bio::PrimerDesigner.
+#
+$binary eq 'primer3' ? primer3( %config ) : ePCR( %config );
+
+# -------------------------------------------------------------------
+sub check{
+
+=head2 check
+
+Verifies that this CGI is active and supports the requested binary.
+
+=cut
+
+my $program = shift;
+  if ($program) {
+    print "$program OK\n" if $program =~ /e-PCR|primer3/;
+    exit;
+  }
+}
+
+
 =pod
 
 =head1 NAME
@@ -95,7 +119,7 @@ primer_designer.cgi -- server-side wrapper for the primer3 and e-PCR binaries
 
 =head1 AUTHORS
 
-Copyright (C) 2003-8 Sheldon McKay E<lt>smckay@cshl.eduE<gt>,
+Copyright (C) 2003-2009 Sheldon McKay E<lt>mckays@cshl.eduE<gt>,
 Ken Youens-Clark E<lt>kclark@cpan.orgE<gt>.
 
 =head1 LICENSE
