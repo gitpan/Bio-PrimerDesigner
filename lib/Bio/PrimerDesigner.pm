@@ -273,8 +273,10 @@ otherwise returns 0.
 
     my $self = shift;
 
+    # technically, this should be 'os_is_not_windows'
     unless ( defined $self->{'os_is_unix'} ) {
-        $self->{'os_is_unix'} = ( $^O =~ /(n[iu]x|darwin)/ ) ? 1 : 0;
+        #$self->{'os_is_unix'} = ( $^O =~ /(n[iu]x|darwin)/ ) ? 1 : 0;
+	$self->{'os_is_unix'} = ( $^O !~ /^MSWin/i ) ? 1 : 0;
     }
 
     return $self->{'os_is_unix'};
